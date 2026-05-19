@@ -4,203 +4,170 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_apart/admin_login.dart';
 
-
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({super.key});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final form_key = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
 
-  TextEditingController emailEditController = TextEditingController();
-  TextEditingController passEditController = TextEditingController();
-  TextEditingController nameEditController = TextEditingController();
-  TextEditingController flatEditController = TextEditingController();
-  TextEditingController vehicleEditController = TextEditingController();
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passController = TextEditingController();
+  final flatController = TextEditingController();
+  final vehicleController = TextEditingController();
 
-  // DatabaseReference db = FirebaseDatabase.instance.ref().child("Users");
-  final CollectionReference Collection = FirebaseFirestore.instance.collection(
-      "Secretary");
-  final user = FirebaseAuth.instance.currentUser;
-  final email = FirebaseAuth.instance.currentUser!.email;
+  bool loading = false;
+
+  Future<void> signUp() async {
+    if (!formKey.currentState!.validate()) return;
+
+    setState(() => loading = true);
+
+    try {
+      // Create user
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passController.text.trim(),
+      );
+
+      final uid = userCredential.user!.uid;
+
+      // Save to Firestore (clean structure)
+      await FirebaseFirestore.instance
+          .collection("Members")
+          .doc(uid)
+          .set({
+        "Name": nameController.text,
+        "Email": emailController.text,
+        "Flat Number": flatController.text,
+        "Number of vehicles": vehicleController.text,
+        "userUid": uid,
+        "createdAt": FieldValue.serverTimestamp(),
+      });
+
+      Fluttertoast.showToast(msg: "تم إنشاء الحساب بنجاح");
+
+      await FirebaseAuth.instance.signOut();
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const AdminLogin()),
+        (route) => false,
+      );
+    } catch (e) {
+      Fluttertoast.showToast(msg: "فشل إنشاء الحساب");
+    }
+
+    setState(() => loading = false);
+  }
+
+  Widget buildField(
+    TextEditingController controller,
+    String label,
+    IconData icon,
+  ) {
+    return TextFormField(
+      controller: controller,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.white70),
+        prefixIcon: Icon(icon, color: const Color(0xFFC9A84C)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.white24),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFC9A84C)),
+        ),
+      ),
+      validator: (value) =>
+          value!.isEmpty ? "هذا الحقل مطلوب" : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(30),
-            child: Column(
-              children: [
-                Image.asset("assets/images/login.png", fit: BoxFit.cover),
-                Text("Get On Board!",style: TextStyle(color: Colors.blueGrey,fontSize: 30,fontWeight: FontWeight.bold),),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 20.0),
-                  child: Form(
-                    key: form_key,
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextFormField(
-                        controller: nameEditController,
-                        decoration: const InputDecoration(
-                            label: Text("Name"),
-                            prefixIcon: Icon(
-                              Icons.person_outline_rounded,
-                              color: Color(0xffF9A826),
-                            ),
-                            border: OutlineInputBorder(),
-                            labelStyle: TextStyle(color: Colors.blueGrey),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3.0, color: Colors.blueGrey))),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Name cannot be empty";
-                            }
-                          }
-                      ),
-                      SizedBox(height: 20,),
-                      TextFormField(
-                        controller: emailEditController,
-                        decoration: const InputDecoration(
-                            label: Text("Email"),
-                            prefixIcon: Icon(
-                              Icons.email_outlined,
-                              color: Color(0xffF9A826),
-                            ),
-                            border: OutlineInputBorder(),
-                            labelStyle: TextStyle(color: Colors.blueGrey),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3.0, color: Colors.blueGrey))),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Email cannot be empty";
-                            }
-                          }
-                      ),
-                          SizedBox(height: 20,),
-                      TextFormField(
-                        controller:passEditController,
-                        decoration: const InputDecoration(
-                            label: Text("Create Password"),
-                            prefixIcon: Icon(
-                              Icons.fingerprint_outlined,
-                              color: Color(0xffF9A826),
-                            ),
-                            border: OutlineInputBorder(),
-                            labelStyle: TextStyle(color: Colors.blueGrey),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3.0, color: Colors.blueGrey))),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Password cannot be empty";
-                            }
-                            else if (value.length < 8) {
-                              return "Password length must be 8 or more";
-                            }
-                          }
-                      ),
-                          SizedBox(height:20,),
-                      TextFormField(
-                        controller: flatEditController,
-                        decoration: const InputDecoration(
-                            label: Text("Flat Number"),
-                            prefixIcon: Icon(
-                              Icons.house_rounded,
-                              color: Color(0xffF9A826),
-                            ),
-                            border: OutlineInputBorder(),
-                            labelStyle: TextStyle(color: Colors.blueGrey),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3.0, color: Colors.blueGrey))),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Flat cannot be empty";
-                            }
-                          }
-                      ),
-                          SizedBox(height: 20,),
-                      TextFormField(
-                        controller: vehicleEditController,
-                        decoration: const InputDecoration(
-                            label: Text("Enter A number of Vehicle"),
-                            prefixIcon: Icon(
-                              Icons.car_crash_outlined,
-                              color: Color(0xffF9A826),
-                            ),
-                            border: OutlineInputBorder(),
-                            labelStyle: TextStyle(color: Colors.blueGrey),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3.0, color: Colors.blueGrey))),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Vehicle cannot be empty";
-                            }
-                          }
-                      ),
-                      SizedBox(height: 20,),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (form_key.currentState!.validate()) {
-                              FirebaseAuth.instance
-                                  .createUserWithEmailAndPassword
-                                (email: emailEditController.text,
-                                  password: passEditController.text
-                              )
-                                  .then((value) {
-                                Fluttertoast.showToast(
-                                    msg: "Member added Successfully");
-                                Collection.doc(user!.uid).collection(
-                                    "Members").doc(
-                                    FirebaseAuth.instance.currentUser!.uid).
-                                set(
-                                    {
-                                      'Name': nameEditController.text,
-                                      'Email': emailEditController.text,
-                                      'Password': passEditController.text,
-                                      'Flat Number': flatEditController
-                                          .text,
-                                      'Number of vehicles': vehicleEditController
-                                          .text,
-                                      'userUid': FirebaseAuth.instance
-                                          .currentUser!.uid
-                                    }
-                                ).then((value) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF081420),
 
-                                  FirebaseAuth.instance.signOut();
-                                  //FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
 
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) => admin_login()));
-                                  //FirebaseAuth.instance.tenantId(user.uid);
-                                });
-                              }).catchError((e) {
-                                Fluttertoast.showToast(
-                                    msg: "Registration Failed");
-                              });
-                            }
+          child: Column(
+            children: [
+              const Icon(Icons.person_add,
+                  size: 80, color: Color(0xFFC9A84C)),
 
-                          },
-                         child: const Text("SinghUp"),
+              const SizedBox(height: 10),
 
-                         ),
-                      ),
-                    ],
-                  )),
+              const Text(
+                "إنشاء حساب مواطن",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 25),
+
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    buildField(nameController, "الاسم", Icons.person),
+                    const SizedBox(height: 12),
+
+                    buildField(emailController, "البريد الإلكتروني", Icons.email),
+                    const SizedBox(height: 12),
+
+                    buildField(passController, "كلمة المرور", Icons.lock),
+                    const SizedBox(height: 12),
+
+                    buildField(flatController, "رقم الشقة", Icons.home),
+                    const SizedBox(height: 12),
+
+                    buildField(vehicleController, "عدد المركبات", Icons.directions_car),
+
+                    const SizedBox(height: 25),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: loading ? null : signUp,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFC9A84C),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: loading
+                            ? const CircularProgressIndicator(
+                                color: Colors.black,
+                              )
+                            : const Text(
+                                "إنشاء الحساب",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
