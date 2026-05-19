@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-//import 'package:my_apartment/splashscreen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:my_apart/splashScreen.dart';
 
@@ -12,20 +10,33 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'My Apartment',
+
+      title: 'منصة الخدمات الحكومية',
+
       theme: ThemeData(
-        fontFamily : GoogleFonts.lato().fontFamily,
+        useMaterial3: true,
+
+        brightness: Brightness.dark,
+
+        primaryColor: const Color(0xFF0B1F3A),
+
+        scaffoldBackgroundColor: const Color(0xFF081420),
+
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFFC9A84C),
+          secondary: Color(0xFF1A7A8A),
+        ),
+
+        textTheme: GoogleFonts.cairoTextTheme(),
       ),
-      home: SplashScreen(),
-     
+
+      home: const SplashScreen(),
     );
   }
 }
