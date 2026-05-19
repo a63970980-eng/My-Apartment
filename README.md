@@ -1,35 +1,31 @@
-# Apartment Management System
+# نظام الخدمات الحكومية والبلاغات
 
-## Overview
+## نظرة عامة
+هذا التطبيق مبني باستخدام Flutter و Firebase، ويهدف إلى تقديم منصة متكاملة لخدمات المواطنين وإدارة البلاغات والشكاوى. يتيح للمستخدمين تقديم البلاغات، متابعة الطلبات، والتواصل مع الجهة المختصة لمعالجة المشاكل بسرعة وكفاءة.
 
-The Apartment Management System is a mobile application developed using Flutter and Firebase. It provides a comprehensive solution for managing various aspects of apartment living, including maintenance requests, complaints, parking, member management, and financial tracking.
+## المميزات
 
-## Features
+- تقديم طلبات خدمات حكومية بسهولة
+- نظام بلاغات (طرق، كهرباء، مياه، نظافة وغيرها)
+- تتبع حالة البلاغات بشكل مباشر
+- إدارة بيانات المستخدمين (المواطنين)
+- إشعارات لحالة الطلبات والتحديثات
+- لوحة تحكم للإدارة لمتابعة ومعالجة البلاغات
+- تصنيف البلاغات حسب النوع والأولوية
 
-- **Maintenance:** Submit and track maintenance requests.
-- **Complaints:** Report and manage complaints within the apartment complex.
-- **Parking:** Reserve and manage parking spaces.
-- **Member Management:** Maintain a database of apartment residents and manage their information.
-- **Financial Tracking:** Keep track of income, expenses, and overall financial management.
-- **Club House Requests:** Allow users to request the use of the club house for events like birthday parties.
-- **And More:** 
+## التقنيات المستخدمة
 
+- Flutter: لبناء تطبيق متعدد المنصات
+- Firebase: لإدارة البيانات، المصادقة، والتخزين السحابي
 
-## Technologies Used
+## البدء
 
-- **Flutter:** A UI toolkit for building natively compiled applications for mobile, web, and desktop from a single codebase.
-- **Firebase:** A comprehensive app development platform that integrates a variety of services, including authentication, real-time databases, and cloud storage.
+### المتطلبات
+- تثبيت Flutter SDK
+- إنشاء مشروع Firebase وربطه بالتطبيق
 
-## Getting Started
+### التثبيت
 
-### Prerequisites
-
-- Ensure you have Flutter installed. If not, follow the [Flutter installation guide](https://flutter.dev/docs/get-started/install).
-- Set up a Firebase project and configure it according to the [Firebase setup guide](https://firebase.google.com/docs/flutter/setup).
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/harsh095/My-Apartment
+نسخ المشروع:
+```bash
+git clone https://github.com/your-repo/government-services-app
