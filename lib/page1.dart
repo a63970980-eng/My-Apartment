@@ -1,75 +1,83 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_apart/admin_home.dart';
 import 'package:my_apart/f_login.dart';
 import 'package:my_apart/user_home.dart';
-//import 'package:my_apartment/admin_home.dart';
-//import 'package:my_apartment/chek_auth.dart';
-//import 'package:my_apartment/f_login.dart';
-//import 'package:my_apartment/user_home.dart';
 
-class page1 extends StatefulWidget {
-  const page1({Key? key}) : super(key: key);
+class PageRouter extends StatefulWidget {
+  const PageRouter({super.key});
 
   @override
-  State<page1> createState() => _page1State();
+  State<PageRouter> createState() => _PageRouterState();
 }
 
-class _page1State extends State<page1> {
+class _PageRouterState extends State<PageRouter> {
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    checkUser();
+  }
+
+  Future<void> checkUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      setState(() => loading = false);
+      return;
+    }
+
+    try {
+      // Check admin
+      final adminDoc = await FirebaseFirestore.instance
+          .collection('Secretary')
+          .doc(user.uid)
+          .get();
+
+      if (adminDoc.exists && adminDoc.data()?['userUid'] == user.uid) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminHome()),
+        );
+        return;
+      }
+
+      // Check user in Members
+      final memberQuery = await FirebaseFirestore.instance
+          .collectionGroup('Members')
+          .where('userUid', isEqualTo: user.uid)
+          .get();
+
+      if (memberQuery.docs.isNotEmpty) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const UserHome()),
+        );
+        return;
+      }
+
+      // default fallback
+      setState(() => loading = false);
+    } catch (e) {
+      setState(() => loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      body: StreamBuilder<User?>(stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context,snapshot)
-         {
-          if(snapshot.hasData)
-          {
-           return Container(
-             child: fun(),
-           );
-          }
-          else
-         {
-           return f_login();
-         }
-        }
-      )
-    );
-  }
-fun()
-{
-  FirebaseFirestore.instance
-      .collection('Secretary')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
-      .get()
-      .then((DocumentSnapshot documentSnapshot) {
-    if (documentSnapshot.get("userUid") == FirebaseAuth.instance.currentUser!.uid)
-    {
-      Navigator.push(context, MaterialPageRoute(
-          builder: (context) => admin_home()));
+    if (loading) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF081420),
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFFC9A84C),
+          ),
+        ),
+      );
     }
-  });
 
-
-  FirebaseFirestore.instance.collection("Secretary").get().then((value) =>
-      value.docs.forEach((snapshot)
-      {
-        FirebaseFirestore.instance.collection("Secretary").doc(snapshot.id).collection("Members")
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .get()
-            .then((snapshot) {
-          if (snapshot.get("userUid") == FirebaseAuth.instance.currentUser!.uid)
-          {
-            Navigator.push(context, MaterialPageRoute(
-                builder: (context) => user_home()));
-          }
-        });
-      }
-      ));
+    return const FLogin();
+  }
 }
-
-}
-
