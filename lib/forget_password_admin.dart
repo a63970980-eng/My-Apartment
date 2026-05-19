@@ -2,92 +2,154 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_apart/admin_login.dart';
 
-
-
-class forgot_password_admin extends StatefulWidget {
-  const forgot_password_admin({Key? key}) : super(key: key);
+class ForgotPasswordAdmin extends StatefulWidget {
+  const ForgotPasswordAdmin({super.key});
 
   @override
-  State<forgot_password_admin> createState() => _forgot_password_admin();
+  State<ForgotPasswordAdmin> createState() => _ForgotPasswordAdminState();
 }
 
-class _forgot_password_admin extends State<forgot_password_admin> {
+class _ForgotPasswordAdminState extends State<ForgotPasswordAdmin> {
   final emailController = TextEditingController();
-  final form_key = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
 
-  Future passwordReset() async
-  {
-    await FirebaseAuth.instance.sendPasswordResetEmail(
-        email: emailController.text.trim()).then((value) {
-      showDialog(context: context,
-          builder: (context) {
-            return AlertDialog(
-                content: Text("Password reset link sent to your email, check")
-            );
-          }
+  bool loading = false;
+
+  Future<void> resetPassword() async {
+    if (!formKey.currentState!.validate()) return;
+
+    setState(() => loading = true);
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: emailController.text.trim(),
       );
-    }).catchError((e) {
-      print(e);
-      showDialog(context: context,
-          builder: (context) {
-            return AlertDialog(
-                content: Text(e.message.toString())
-            );
-          }
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("تم الإرسال"),
+          content: const Text(
+              "تم إرسال رابط إعادة تعيين كلمة المرور إلى البريد الإلكتروني"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminLogin()),
+                  (route) => false,
+                );
+              },
+              child: const Text("حسناً"),
+            ),
+          ],
+        ),
       );
-    });
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("خطأ"),
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
+    setState(() => loading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(elevation: 0,title: Text("Reset Password",style: TextStyle(color: Colors.white),),
-          leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.white,),onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => admin_login()));},),
-        ),
-        body: Form
-          (
-            key: form_key,
-            child:Column(
-              children: [
-                SizedBox(height: 10,),
-                Padding(padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Text("Enter your email and after you will ger password reset link",style: TextStyle(color: Colors.deepOrangeAccent,
-                      fontWeight:FontWeight.bold ,fontSize: 20),),
-                ),
+      backgroundColor: const Color(0xFF081420),
 
-                SizedBox(height: 30,),
-                Padding(padding: EdgeInsets.symmetric(horizontal: 30),
-                  child:TextFormField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                          filled: true,
-                          hintText: "Email",
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                          fillColor: Colors.grey.shade100
-                      ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Email cannot be empty";
-                        }
-                      }
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0B1F3A),
+        title: const Text("استعادة كلمة مرور الإدارة"),
+        centerTitle: true,
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.admin_panel_settings,
+              size: 80,
+              color: Color(0xFFC9A84C),
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              "إعادة تعيين كلمة مرور المدير",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+
+            const SizedBox(height: 5),
+
+            const Text(
+              "أدخل البريد الرسمي لحساب الإدارة",
+              style: TextStyle(color: Colors.white70),
+            ),
+
+            const SizedBox(height: 30),
+
+            Form(
+              key: formKey,
+              child: TextFormField(
+                controller: emailController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: "البريد الإلكتروني",
+                  labelStyle: const TextStyle(color: Colors.white70),
+                  prefixIcon:
+                      const Icon(Icons.email, color: Color(0xFFC9A84C)),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Colors.white24),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:
+                        const BorderSide(color: Color(0xFFC9A84C)),
                   ),
                 ),
-                SizedBox(height: 20,),
-                MaterialButton(onPressed: (){
-                  if(form_key.currentState!.validate())
-                  {
-                    passwordReset();
-                  }
-                },
-                  child: Text("Reset Password"),
-                  color: Colors.lightBlue,
+                validator: (value) =>
+                    value!.isEmpty ? "أدخل البريد الإلكتروني" : null,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: loading ? null : resetPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFC9A84C),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-
-              ],
-
-            )
-        )
-
+                child: loading
+                    ? const CircularProgressIndicator(color: Colors.black)
+                    : const Text(
+                        "إرسال الرابط",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
