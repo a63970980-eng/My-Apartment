@@ -1,17 +1,10 @@
 import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:my_apart/Auth/email_aauth_Sec.dart';
-import 'package:my_apart/Auth/otp_Auth_Sec.dart';
-import 'package:my_apart/member_list.dart';
-import 'package:my_apart/page1.dart';
-import 'package:my_apart/admin_profile.dart';
 import 'package:my_apart/user_login.dart';
 
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
-class SplashScreen extends StatefulWidget
-{
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -19,29 +12,68 @@ class SplashScreen extends StatefulWidget
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-        super.initState();
-        Timer(Duration(seconds: 4), ()
-        {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: ((context) => page1() )));
-        });
-        
+    super.initState();
+
+    Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const UserLogin()),
+      );
+    });
   }
+
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
-        body:  Center(
-          child: Container(
-            color:  Color(0xffffff),
-            height: 300,
-            width : 300,
-            child: Image(
-              image: AssetImage('assets/images/s1.png'),
+    return Scaffold(
+      backgroundColor: const Color(0xFF081420),
+
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Logo
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF132847),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Image.asset(
+                'assets/images/s1.png',
+                height: 120,
+              ),
             ),
-          ),
+
+            const SizedBox(height: 30),
+
+            const Text(
+              "منصة الخدمات الحكومية",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            const Text(
+              "خدمات • بلاغات • متابعة",
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            const CircularProgressIndicator(
+              color: Color(0xFFC9A84C),
+            ),
+          ],
         ),
-
-     );
+      ),
+    );
   }
- 
 }
-
