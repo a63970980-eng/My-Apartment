@@ -1,103 +1,118 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/material.dart';
 import 'package:my_apart/admin_login.dart';
-import 'package:my_apart/constants/colors.dart';
 import 'package:my_apart/user_login.dart';
 
-class f_login extends StatelessWidget {
-  get container => null;
+class FLogin extends StatelessWidget {
+  const FLogin({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    return Center(
-      child: Scaffold(
-          backgroundColor: Colors.white,
-          body: Container(
-            padding: EdgeInsets.all(25),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 450,
-                  child:
-                      Image.asset("assets/images/flog.png", fit: BoxFit.fill),
+    return Scaffold(
+      backgroundColor: const Color(0xFF081420),
+
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
+
+              // Logo
+              SizedBox(
+                height: 220,
+                child: Image.asset(
+                  "assets/images/flog.png",
+                  fit: BoxFit.contain,
                 ),
-                //SizedBox(height: 00),
-                Text(
-                  "A New Perspective of Care!",
-                  style: TextStyle(
-                      color: Colors.blueGrey,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic),
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "نظام إدارة المجمع السكني",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
                 ),
-               
-                SizedBox(
-                  height: 120,
-                ),
-                Text(
-                  "As Login Per!!",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
-                    color: Colors.amber,
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                        child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(),
-                        foregroundColor: Colors.black87,
-                        // side: BorderSide(color: Colors.black),
-                        backgroundColor: Color.fromARGB(255, 247, 180, 73).withOpacity(0.9),
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => admin_login()));
-                      },
-                      child: Text('Secertory'.toUpperCase(),
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                    )),
-                    const SizedBox(
-                      width: 10.0,
+              ),
+
+              const SizedBox(height: 10),
+
+              const Text(
+                "اختر نوع الدخول",
+                style: TextStyle(color: Colors.white70),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Admin Button
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.admin_panel_settings),
+                  label: const Text("دخول الإدارة"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFC9A84C),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    Expanded(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => user_login()));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(),
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.blueGrey,
-                              // side: BorderSide(color: tSecoundaryColor),
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                            ),
-                            child: Text(
-                              'Mamber'.toUpperCase(),
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )))
-                  ],
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AdminLogin(),
+                      ),
+                    );
+                  },
                 ),
-              ],
-            ),
-          )),
+              ),
+
+              const SizedBox(height: 15),
+
+              // User Button
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.person),
+                  label: const Text("دخول المستخدم"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const UserLogin(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const Spacer(),
+
+              const Text(
+                "Government Housing System",
+                style: TextStyle(color: Colors.white38, fontSize: 12),
+              ),
+
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
